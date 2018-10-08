@@ -41,4 +41,6 @@ class PlayingField:
         return self.agentPop
 
     def add_agent(self, agent):
+
         self.agentPop.add(agent, self)
+

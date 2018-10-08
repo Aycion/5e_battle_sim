@@ -25,12 +25,13 @@ class AgentPop:
         self.limit += 1
         return True
 
+
 class Agent:
 
     def __init__(self, controller, playing_field, point=(-1, -1), neighbors=None):
         self.controller = controller
         self.playing_field = playing_field
-        self.state = point
+        (self._x, self._y) = point
         self.neighbors = neighbors if neighbors else []
 
     def move(self, dest):
@@ -39,8 +40,10 @@ class Agent:
                 return False
         self.state = dest
 
-
         return True
+
+    def get_state(self):
+        return (self._x, self._y)
 
     def _set_neighbors(self):
         (max_x, max_y) = self.playing_field.bounds
