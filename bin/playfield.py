@@ -7,12 +7,18 @@ from bin.agent import *
 
 class PlayingField:
 
-    def __init__(self, agents=AgentPop(0), bounds=(15,15)):
+    def __init__(self, pop_cap=5, bounds=(15,15)):
+
+        if pop_cap < 0:
+            raise ValueError('Invalid population size: ', pop_cap)
+        if bounds[0] < 1 or bounds[1] < 1:
+            raise ValueError('Invalid coordinates: ', bounds)
+
         self.bounds = bounds
         self._x_max = bounds[0]
         self._y_max = bounds[1]
-        self.agentPop = agents
-        self.grid = [[x for x in range(self._x_max)] for _ in range(self._y_max + 1)]
+        self.agentPop = AgentPop(pop_cap)
+        self.grid = [[None for _ in range(self._x_max)] for _ in range(self._y_max + 1)]
 
     def get_square(self, point):
         """
@@ -22,25 +28,45 @@ class PlayingField:
         :return: Contents of the square corresponding to point; None if the square is empty
         """
         (x, y) = point
-        if 0 <= x <= self._x_max and 0 <= y <= self._y_max:
+        if 0 <= x < self._x_max and 0 <= y < self._y_max:
             return self.grid[x][y]
-        raise ValueError('Value out of bounds')
+        raise ValueError('Coordinates {} out of bounds.'.format((x, y)))
 
-    def _gen_rand_agents(self, count):
+    def add_agent(self, agent):
+        if self.get_square(agent.get_state()):
+            raise ValueError('Coordinates {} occupied'.format(agent.get_state()))
+
+        self.grid[agent.get_x()][agent.get_y()] = agent
+        return self.agentPop.add(agent)
+
+    def gen_rand_agents(self, count):
         """
         Generate a number of random agents specified by count
 
         :param count: The number of agents to create
         :return: The newly updated population of agents
         """
-        for _ in range(count):
-            rand_x = rand.randint(0, self._x_max)
-            rand_y = rand.randint(0, self._y_max)
-            agent = Agent(self,(rand_x, rand_y))
-            self.agentPop.add(agent, self)
+
+        while count > 0:
+            rand_x = rand.randint(0, self._x_max - 1)
+            rand_y = rand.randint(0, self._y_max - 1)
+            agent = Agent(self,point=(rand_x, rand_y))
+
+            # Handles case in which square is taken
+            try:
+                self.add_agent(agent)
+                count -= 1
+            except ValueError as e:
+                print(e)
+            except IndexError as e:
+                print(e)
+                count = 0
+
         return self.agentPop
 
-    def add_agent(self, agent):
+    def clear(self):
+        self.agentPop = AgentPop(self.agentPop.limit)
 
-        self.agentPop.add(agent, self)
-
+    def print(self):
+        for ag in self.agentPop:
+            print(ag)
