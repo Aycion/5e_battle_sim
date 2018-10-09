@@ -26,12 +26,27 @@ class GDriver(GraphWin):
         self.title = title
         self.grid_scale = grid_scale
         self.border = border
+        self.win_width = (self.width * self.grid_scale) + self.border
+        self.win_height = (self.height * self.grid_scale) + self.border
+
 
         super(GDriver, self).__init__(
             title=self.title,
-            width=(self.width * self.grid_scale) + self.border/2,
-            height=(self.height * self.grid_scale) + self.border/2)
+            width=self.win_width,
+            height=self.win_height)
 
+        # Draw the grid
+        for x in range(int(self.border / 2), self.win_width, self.grid_scale):
+            p1 = Point(x, self.border/2)
+            p2 = Point(x, self.win_height - (self.border/2))
+            line = Line(p1, p2)
+            line.draw(self)
+
+        for y in range(int(self.border / 2), self.win_height, self.grid_scale):
+            p1 = Point(self.border/2, y)
+            p2 = Point(self.win_width - (self.border / 2), y)
+            line = Line(p1, p2)
+            line.draw(self)
 
     def _gen_field(self, width, height):
         """
@@ -57,7 +72,7 @@ class GDriver(GraphWin):
 
         line = Line(tl, tr)
         line.draw(self)
-        line = Line(tr,br)
+        line = Line(tr, br)
         line.draw(self)
         line = Line(br, bl)
         line.draw(self)
@@ -66,7 +81,10 @@ class GDriver(GraphWin):
 
         for ag in self.field.agentPop:
             (x, y) = ag.get_state()
-            ag_pt = Point((x * self.grid_scale) + 15, (y * self.grid_scale) + 15)
+            ag_pt = Point(
+                (x * self.grid_scale) + edge + (self.grid_scale / 2),
+                (y * self.grid_scale) + edge + (self.grid_scale / 2))
+            ag_cir = Circle(ag_pt, self.grid_scale/2)
             if len(ag.get_neighbors()) > 0:
-                ag_pt.setFill('red')
-            ag_pt.draw(self)
+                ag_cir.setFill('red')
+            ag_cir.draw(self)

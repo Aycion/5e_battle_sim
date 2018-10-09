@@ -5,9 +5,10 @@ File: playfield.py -- Copyright Emery Bacon;   10/7/2018
 import random as rand
 from bin.agent import *
 
+
 class PlayingField:
 
-    def __init__(self, pop_cap=5, bounds=(15,15), grid_def=None):
+    def __init__(self, pop_cap=5, bounds=(15, 15), grid_default=None):
 
         if pop_cap < 0:
             raise ValueError('Invalid population size: ', pop_cap)
@@ -16,10 +17,10 @@ class PlayingField:
 
         self.bounds = bounds
         (self._x_max, self._y_max) = bounds
-        self._grid_def = grid_def
+        self._grid_default = grid_default
 
         self.agentPop = AgentPop(pop_cap)
-        self._set_grid(self._grid_def)
+        self._set_grid(self._grid_default)
 
     def get_bounds(self):
         return self.bounds
@@ -43,6 +44,9 @@ class PlayingField:
         self.grid[agent.get_x()][agent.get_y()] = agent
         return self.agentPop.add(agent)
 
+    def move(self, agent, dest):
+        pass
+
     def gen_rand_agents(self, count):
         """
         Generate a number of random agents specified by count
@@ -54,7 +58,7 @@ class PlayingField:
         while count > 0:
             rand_x = rand.randint(0, self._x_max - 1)
             rand_y = rand.randint(0, self._y_max - 1)
-            agent = Agent(self,point=(rand_x, rand_y))
+            agent = Agent(self, point=(rand_x, rand_y))
 
             # Handles case in which square is taken
             try:
@@ -71,8 +75,7 @@ class PlayingField:
 
     def clear(self):
         self.agentPop = AgentPop(self.agentPop.limit)
-        self._set_grid(self._grid_def)
-
+        self._set_grid(self._grid_default)
 
     def print(self):
         for ag in self.agentPop:
