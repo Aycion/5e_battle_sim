@@ -7,7 +7,7 @@ from bin.agent import *
 
 class PlayingField:
 
-    def __init__(self, pop_cap=5, bounds=(15,15)):
+    def __init__(self, pop_cap=5, bounds=(15,15), grid_def=None):
 
         if pop_cap < 0:
             raise ValueError('Invalid population size: ', pop_cap)
@@ -17,8 +17,10 @@ class PlayingField:
         self.bounds = bounds
         self._x_max = bounds[0]
         self._y_max = bounds[1]
+        self._grid_def = grid_def
+
         self.agentPop = AgentPop(pop_cap)
-        self.grid = [[None for _ in range(self._x_max)] for _ in range(self._y_max + 1)]
+        self._set_grid(self._grid_def)
 
     def get_square(self, point):
         """
@@ -58,6 +60,7 @@ class PlayingField:
                 count -= 1
             except ValueError as e:
                 print(e)
+                count -= 1
             except IndexError as e:
                 print(e)
                 count = 0
@@ -66,7 +69,12 @@ class PlayingField:
 
     def clear(self):
         self.agentPop = AgentPop(self.agentPop.limit)
+        self._set_grid(self._grid_def)
+
 
     def print(self):
         for ag in self.agentPop:
             print(ag)
+
+    def _set_grid(self, default=None):
+        self.grid = [[default for _ in range(self._x_max)] for _ in range(self._y_max + 1)]
