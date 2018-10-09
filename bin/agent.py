@@ -15,7 +15,7 @@ class AgentPop:
         return self.agents.__iter__()
 
     def add(self, agent):
-        if self.size > self.limit:
+        if self.size >= self.limit:
             raise IndexError('Population cap reached')
         self.agents.append(agent)
         self.update_all()
@@ -24,10 +24,8 @@ class AgentPop:
         return True
 
     def update_all(self):
-        # newlist = list()
         for ag in self.agents:
             ag.update_nb()
-        # self.agents = newlist
         return self
 
 
@@ -60,7 +58,7 @@ class Agent:
                 return False
         self.state = dest
         self._set_neighbors()
-        
+
 
         return True
 

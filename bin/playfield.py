@@ -15,12 +15,14 @@ class PlayingField:
             raise ValueError('Invalid coordinates: ', bounds)
 
         self.bounds = bounds
-        self._x_max = bounds[0]
-        self._y_max = bounds[1]
+        (self._x_max, self._y_max) = bounds
         self._grid_def = grid_def
 
         self.agentPop = AgentPop(pop_cap)
         self._set_grid(self._grid_def)
+
+    def get_bounds(self):
+        return self.bounds
 
     def get_square(self, point):
         """
@@ -77,4 +79,4 @@ class PlayingField:
             print(ag)
 
     def _set_grid(self, default=None):
-        self.grid = [[default for _ in range(self._x_max)] for _ in range(self._y_max + 1)]
+        self.grid = [[default for _ in range(self._y_max)] for _ in range(self._x_max)]
