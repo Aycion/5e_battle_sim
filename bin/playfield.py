@@ -37,15 +37,13 @@ class PlayingField:
             return self.grid[x][y]
         raise ValueError('Coordinates {} out of bounds.'.format((x, y)))
 
-    def add_agent(self, agent):
+    def add_agent(self, agent, controller=None):
         if self.get_square(agent.get_state()):
             raise ValueError('Coordinates {} occupied'.format(agent.get_state()))
 
         self.grid[agent.get_x()][agent.get_y()] = agent
+        agent.set_controller(controller)
         return self.agentPop.add(agent)
-
-    def move(self, agent, dest):
-        pass
 
     def gen_rand_agents(self, count):
         """
@@ -60,14 +58,13 @@ class PlayingField:
             rand_y = rand.randint(0, self._y_max - 1)
             agent = Agent(self, point=(rand_x, rand_y))
 
-            # Handles case in which square is taken
             try:
                 self.add_agent(agent)
                 count -= 1
-            except ValueError as e:
+            except ValueError as e:  # if square is occupied
                 print(e)
                 count -= 1
-            except IndexError as e:
+            except IndexError as e:  # if the population is full
                 print(e)
                 count = 0
 
